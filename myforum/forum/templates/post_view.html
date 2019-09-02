@@ -1,0 +1,55 @@
+{% extends "forum_list.html" %}
+{% load forum_tags %}
+
+{% block headtitle %}
+    {{ post.title }}
+{% endblock %}
+
+
+{% block body %}
+
+    {# The toplevel post #}
+    <div class="ui vertical segment">
+        {% post_body post=post user=request.user tree=tree %}
+    </div>
+
+    {# Render each answer for the post #}
+    {% for answer in answers %}
+        <div class="ui vertical segment">
+            {% post_body post=answer user=request.user tree=tree %}
+        </div>
+    {% endfor %}
+
+
+    {% if request.user.is_authenticated and post.is_open %}
+        <div class="ui info tablet message">
+            <p>If you want to provide a solution to the original question, click <a
+                    class="ui blue display-answer tiny label">ADD ANSWER</a>.<br>
+                Use the <span class="ui tiny label">ADD COMMENT</span> or <span
+                        class="ui tiny label">ADD REPLY</span> buttons
+                embedded in each post to comment, to ask for clarifications, to request more details, or respond
+                to a
+                previous answer or comment.
+            </p>
+        </div>
+        <div id="add-answer" data-value="{{ post.uid }}"></div>
+
+    {% elif not post.is_open %}
+        <div class="ui warning message">
+            This thread is not open. No new answers may be added
+        </div>
+    {% else %}
+        <div class="ui info message">
+            <p><a class="ui small label" href="{% url 'login' %}">
+                <i class="sign in icon"></i>Login</a> before adding your answer.</p>
+        </div>
+
+    {% endif %}
+
+{% endblock %}
+
+{% block sidebar %}
+
+    <div id="similar-feed" post_uid="{{ post.uid }}"></div>
+
+{% endblock %}
